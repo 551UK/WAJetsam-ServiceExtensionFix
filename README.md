@@ -1,4 +1,4 @@
-# WAJetsam&ServiceExtensionFix
+# WAJetsam-ServiceExtensionFix
 
 Keeps WhatsApp’s ServiceExtension stable by raising its memory limit to 40 MB and preventing Watusi’s expiry-check code from terminating the extension.
 
@@ -7,6 +7,8 @@ Watusi’s checkExpiryDate path can intentionally call _exit(0) inside WhatsApp�
 The tweak patches only that specific expiry-worker exit path and lets the worker return normally instead of killing the ServiceExtension.
 
 If you use Choicy, make sure WatusiExpiryFix is allowed for net.whatsapp.WhatsApp.ServiceExtension and is not blocked, otherwise the main fix will not load.
+
+Repository: https://github.com/551UK/WAJetsam-ServiceExtensionFix
 
 -------------------------------------------------
 How this fix came about 
