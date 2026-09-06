@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleDisplayName</key>
-    <string>WAJetsam&amp;ServiceExtensionFIx</string>
+    <string>WAJetsam-ServiceExtensionFix</string>
     <key>CFBundleExecutable</key>
     <string>WatusiServiceFixPrefs</string>
     <key>CFBundleIdentifier</key>
@@ -13,13 +13,13 @@
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>WAJetsam&amp;ServiceExtensionFIx</string>
+    <string>WAJetsam-ServiceExtensionFix</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.8.0</string>
+    <string>1.8.1</string>
     <key>CFBundleVersion</key>
-    <string>1.8.0</string>
+    <string>1.8.1</string>
     <key>NSPrincipalClass</key>
     <string>WSFRootListController</string>
 </dict>
