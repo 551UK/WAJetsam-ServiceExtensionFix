@@ -1,10 +1,9 @@
-WAJetsam-ServiceExtensionFix 1.8.2
+WAJetsam-ServiceExtensionFix 1.8.3
 
-- Fixes a Settings app crash that could occur when scrolling to the tweak entry on some iOS 16 devices.
-- Simplifies the PreferenceLoader entry to the standard `bundle`, `cell`, `detail`, `icon`, `isController` and `label` fields.
-- Removes the duplicate `controller` and `iconImage` properties and the hard-coded `/var/jb` icon path.
-- Renames the remaining project files and Settings bundle to match `WAJetsam-ServiceExtensionFix`.
-- Keeps `WatusiExpiryFix` under that name so it remains easy to identify and allow in Choicy.
+- Restores the tweak icon in the main iOS Settings list.
+- Uses the existing icon artwork and packages it at proper Settings sizes instead of using the oversized 128 px source directly.
+- Adds 29 px, 58 px (@2x) and 87 px (@3x) Settings icon variants so it displays at the correct physical size across Retina devices.
+- Keeps the simplified PreferenceLoader entry from 1.8.2 to avoid the Settings scrolling crash.
 - Keeps the proven WatusiTools `checkExpiryDate` patch unchanged.
 - Keeps support for both `libWatusiTools.dylib` and `libWatusiToolsSL.dylib`.
 - Keeps the WhatsApp ServiceExtension memory floor at 40 MB.
