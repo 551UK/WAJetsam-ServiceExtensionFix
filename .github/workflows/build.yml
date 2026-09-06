@@ -67,7 +67,7 @@ jobs:
           set -euo pipefail
           grep -q '^Package: com.551.wajetsamserviceextensionfix$' control
           grep -q '^Name: WAJetsam-ServiceExtensionFix$' control
-          grep -q '^Version: 1.8.3$' control
+          grep -q '^Version: 1.8.4$' control
           grep -q '^Homepage: https://github.com/551UK/WAJetsam-ServiceExtensionFix$' control
           grep -q '#define WAJ_TARGET_LIMIT_MB 40' WAJetsamPolicy.h
           grep -q 'checkExpiryDate' WatusiExpiryFix.m
@@ -96,10 +96,9 @@ jobs:
           plutil -lint layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
           grep -q '<string>WAJetsamServiceExtensionFixPrefs</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
           grep -q '<string>WAJRootListController</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
-          grep -q '<string>WAJetsamServiceExtensionFix.png</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          grep -q '<string>/var/jb/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
           ! grep -q '<key>controller</key>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
           ! grep -q '<key>iconImage</key>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
-          ! grep -q '/var/jb/' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
 
       - name: Test 40 MB policy
         shell: bash
@@ -139,7 +138,7 @@ jobs:
           test -n "$DEB"
           test "$(dpkg-deb -f "$DEB" Architecture)" = 'iphoneos-arm64'
           test "$(dpkg-deb -f "$DEB" Package)" = 'com.551.wajetsamserviceextensionfix'
-          test "$(dpkg-deb -f "$DEB" Version)" = '1.8.3'
+          test "$(dpkg-deb -f "$DEB" Version)" = '1.8.4'
           test "$(dpkg-deb -f "$DEB" Name)" = 'WAJetsam-ServiceExtensionFix'
 
           VERIFY_DIR="$RUNNER_TEMP/wajetsam-package-check"
@@ -158,6 +157,7 @@ jobs:
           test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png"
           test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@2x.png"
           test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@3x.png"
+          grep -q '<string>/var/jb/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png</string>' "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist"
           test -x "$CONTROL_DIR/postinst"
           grep -q 'finish reboot' "$CONTROL_DIR/postinst"
 
