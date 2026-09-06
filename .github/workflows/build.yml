@@ -21,45 +21,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate correctly sized Settings icons
+      - name: Stage checked-in Settings icons
         shell: bash
         run: |
           set -euo pipefail
-
-          python3 - <<'PY'
-          import base64
-          from pathlib import Path
-
-          data = base64.b64decode(Path('assets/WAJetsamServiceExtensionFix.png.b64').read_text().strip())
-          source = Path('/tmp/WAJetsamServiceExtensionFix-source.png')
-          bundle_icon = Path('WAJetsamServiceExtensionFixPrefs/Resources/icon.png')
-          source.write_bytes(data)
-          bundle_icon.parent.mkdir(parents=True, exist_ok=True)
-          bundle_icon.write_bytes(data)
-          PY
-
-          ICON_DIR="layout/Library/PreferenceLoader/Preferences"
-          mkdir -p "$ICON_DIR"
-          sips -z 29 29 /tmp/WAJetsamServiceExtensionFix-source.png --out "$ICON_DIR/WAJetsamServiceExtensionFix.png" >/dev/null
-          sips -z 58 58 /tmp/WAJetsamServiceExtensionFix-source.png --out "$ICON_DIR/WAJetsamServiceExtensionFix@2x.png" >/dev/null
-          sips -z 87 87 /tmp/WAJetsamServiceExtensionFix-source.png --out "$ICON_DIR/WAJetsamServiceExtensionFix@3x.png" >/dev/null
-
-          python3 - <<'PY'
-          import struct
-          from pathlib import Path
-
-          expected = {
-              Path('layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png'): (29, 29),
-              Path('layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@2x.png'): (58, 58),
-              Path('layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@3x.png'): (87, 87),
-          }
-
-          for path, size in expected.items():
-              data = path.read_bytes()
-              assert data[:8] == b'\x89PNG\r\n\x1a\n', path
-              width, height = struct.unpack('>II', data[16:24])
-              assert (width, height) == size, (path, width, height, size)
-          PY
+          cp WAJetsamServiceExtensionFixPrefs/Resources/WAJetsamServiceExtensionFix*.png layout/Library/PreferenceLoader/Preferences/
 
       - name: Verify clean source
         shell: bash
@@ -67,7 +33,7 @@ jobs:
           set -euo pipefail
           grep -q '^Package: com.551.wajetsamserviceextensionfix$' control
           grep -q '^Name: WAJetsam-ServiceExtensionFix$' control
-          grep -q '^Version: 2.0$' control
+          grep -q '^Version: 2.0.1$' control
           grep -q '^Homepage: https://github.com/551UK/WAJetsam-ServiceExtensionFix$' control
           grep -q '#define WAJ_TARGET_LIMIT_MB 40' WAJetsamPolicy.h
           grep -q 'checkExpiryDate' WatusiExpiryFix.m
@@ -139,7 +105,7 @@ jobs:
           test -n "$DEB"
           test "$(dpkg-deb -f "$DEB" Architecture)" = 'iphoneos-arm64'
           test "$(dpkg-deb -f "$DEB" Package)" = 'com.551.wajetsamserviceextensionfix'
-          test "$(dpkg-deb -f "$DEB" Version)" = '2.0'
+          test "$(dpkg-deb -f "$DEB" Version)" = '2.0.1'
           test "$(dpkg-deb -f "$DEB" Name)" = 'WAJetsam-ServiceExtensionFix'
 
           VERIFY_DIR="$RUNNER_TEMP/wajetsam-package-check"
@@ -162,22 +128,7 @@ jobs:
           test -x "$CONTROL_DIR/postinst"
           grep -q 'finish reboot' "$CONTROL_DIR/postinst"
 
-          python3 - "$ROOT/Library/PreferenceLoader/Preferences" <<'PY'
-          import struct
-          import sys
-          from pathlib import Path
-
-          root = Path(sys.argv[1])
-          expected = {
-              root / 'WAJetsamServiceExtensionFix.png': (29, 29),
-              root / 'WAJetsamServiceExtensionFix@2x.png': (58, 58),
-              root / 'WAJetsamServiceExtensionFix@3x.png': (87, 87),
-          }
-          for path, size in expected.items():
-              data = path.read_bytes()
-              width, height = struct.unpack('>II', data[16:24])
-              assert (width, height) == size, (path, width, height, size)
-          PY
+          python3 tests/verify_settings_icons.py "$ROOT"
 
           ! test -e "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceDiag.dylib"
           ! test -e "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceTrace.dylib"

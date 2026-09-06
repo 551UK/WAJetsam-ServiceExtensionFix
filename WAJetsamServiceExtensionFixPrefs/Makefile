@@ -8,7 +8,7 @@ WAJetsamServiceExtensionFixPrefs_FILES = WAJRootListController.m
 WAJetsamServiceExtensionFixPrefs_FRAMEWORKS = Foundation CoreFoundation UIKit
 WAJetsamServiceExtensionFixPrefs_PRIVATE_FRAMEWORKS = Preferences
 WAJetsamServiceExtensionFixPrefs_INSTALL_PATH = /Library/PreferenceBundles
-WAJetsamServiceExtensionFixPrefs_INFOPLIST_FILE = Info.plist
+WAJetsamServiceExtensionFixPrefs_RESOURCE_FILES = Info.plist
 WAJetsamServiceExtensionFixPrefs_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/bundle.mk

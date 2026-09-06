@@ -1,12 +1,10 @@
-WAJetsam-ServiceExtensionFix 2.0
+WAJetsam-ServiceExtensionFix 2.0.1
 
-- Built from the clean v1.8.2 codebase.
-- Fixes the Settings preference page layout by using the same proven PreferenceLoader/bundle arrangement as Replaced Screen & Battery.
-- Uses the WhatsApp icon from the tweak as proper 29x29, 58x58 and 87x87 preference-bundle resources.
-- Simplifies the preference-page navigation title so the page does not depend on loading a custom title-view icon.
-- Keeps the 40 MB WhatsApp ServiceExtension memory floor unchanged.
-- Keeps the WatusiTools checkExpiryDate patch unchanged, including support for libWatusiTools.dylib and libWatusiToolsSL.dylib.
-- Keeps the GitHub Repository button in Settings.
-- Keeps the reboot finish action after installation.
+Fixes the missing Settings icon in 2.0:
+- Packages the exact icon filename requested by PreferenceLoader inside the preference bundle.
+- Includes the previously missing bundle Info.plist using Theos RESOURCE_FILES.
+- Uses the checked-in 29x29, 58x58 (@2x), and 87x87 (@3x) icons without overwriting them during the build.
+- Checks the extracted DEB for bundle metadata, executable, icon reference, PNG integrity, dimensions, and matching source artwork before publishing.
 
-If you use Choicy, make sure WatusiExpiryFix is allowed for net.whatsapp.WhatsApp.ServiceExtension and is not blocked.
+The WhatsApp/Watusi patch code and preference controls are unchanged.
+After installing, complete the package manager's restart action and reopen Settings.
