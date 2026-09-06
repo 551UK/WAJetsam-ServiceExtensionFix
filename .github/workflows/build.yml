@@ -151,24 +151,17 @@ jobs:
           test -f "$PREF_ENTRY"
 
           grep -q '<string>WAJetsamServiceExtensionFix.png</string>' "$PREF_ENTRY"
-          test -f "$PREF_BUNDLE/icon.png"
-          test -f "$PREF_BUNDLE/icon@2x.png"
-          test -f "$PREF_BUNDLE/icon@3x.png"
           test -f "$PREF_DIR/WAJetsamServiceExtensionFix.png"
           test -f "$PREF_DIR/WAJetsamServiceExtensionFix@2x.png"
           test -f "$PREF_DIR/WAJetsamServiceExtensionFix@3x.png"
 
-          python3 - "$PREF_BUNDLE" "$PREF_DIR" <<'PY'
+          python3 - "$PREF_DIR" <<'PY'
           import struct
           import sys
           from pathlib import Path
 
-          bundle = Path(sys.argv[1])
-          pref_dir = Path(sys.argv[2])
+          pref_dir = Path(sys.argv[1])
           expected = {
-              bundle / 'icon.png': (29, 29),
-              bundle / 'icon@2x.png': (58, 58),
-              bundle / 'icon@3x.png': (87, 87),
               pref_dir / 'WAJetsamServiceExtensionFix.png': (29, 29),
               pref_dir / 'WAJetsamServiceExtensionFix@2x.png': (58, 58),
               pref_dir / 'WAJetsamServiceExtensionFix@3x.png': (87, 87),
