@@ -1,6 +1,6 @@
 Package: com.551.wajetsamserviceextensionfix
 Name: WAJetsam-ServiceExtensionFix
-Version: 1.8.4
+Version: 1.8.5
 Architecture: iphoneos-arm64
 Description: Keeps WhatsApp ServiceExtension stable with a 40 MB Jetsam floor and prevents WatusiTools checkExpiryDate from terminating it. Allow WatusiExpiryFix in Choicy for the ServiceExtension.
 Maintainer: 551
