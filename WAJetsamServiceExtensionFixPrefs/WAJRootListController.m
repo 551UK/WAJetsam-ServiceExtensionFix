@@ -10,36 +10,7 @@ static NSString * const WAJRepoURL = @"https://github.com/551UK/WAJetsam-Service
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    NSBundle *bundle = [NSBundle bundleForClass:self.class];
-    UIImage *image = [UIImage imageNamed:@"icon.png"
-                                inBundle:bundle
-           compatibleWithTraitCollection:nil];
-
-    if (image) {
-        UIImageView *iconView = [[UIImageView alloc] initWithImage:image];
-        iconView.contentMode = UIViewContentModeScaleAspectFit;
-        iconView.translatesAutoresizingMaskIntoConstraints = NO;
-
-        UILabel *titleLabel = [UILabel new];
-        titleLabel.text = @"WAJetsam-ServiceExtensionFix";
-        titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-        titleLabel.textColor = UIColor.labelColor;
-
-        UIStackView *titleView = [[UIStackView alloc] initWithArrangedSubviews:@[iconView, titleLabel]];
-        titleView.axis = UILayoutConstraintAxisHorizontal;
-        titleView.alignment = UIStackViewAlignmentCenter;
-        titleView.spacing = 6.0;
-
-        [NSLayoutConstraint activateConstraints:@[
-            [iconView.widthAnchor constraintEqualToConstant:22.0],
-            [iconView.heightAnchor constraintEqualToConstant:22.0]
-        ]];
-
-        self.navigationItem.titleView = titleView;
-    } else {
-        self.title = @"WAJetsam-ServiceExtensionFix";
-    }
+    self.title = @"WAJetsam-ServiceExtensionFix";
 }
 
 - (NSArray *)specifiers {

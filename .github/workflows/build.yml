@@ -21,49 +21,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate preference-bundle Settings icons
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          python3 - <<'PY'
-          import base64
-          from pathlib import Path
-
-          data = base64.b64decode(Path('assets/WAJetsamServiceExtensionFix.png.b64').read_text().strip())
-          source = Path('/tmp/WAJetsamServiceExtensionFix-source.png')
-          source.write_bytes(data)
-          Path('WAJetsamServiceExtensionFixPrefs/Resources').mkdir(parents=True, exist_ok=True)
-          PY
-
-          RESOURCE_DIR="WAJetsamServiceExtensionFixPrefs/Resources"
-          sips -z 29 29 /tmp/WAJetsamServiceExtensionFix-source.png --out "$RESOURCE_DIR/icon.png" >/dev/null
-          sips -z 58 58 /tmp/WAJetsamServiceExtensionFix-source.png --out "$RESOURCE_DIR/icon@2x.png" >/dev/null
-          sips -z 87 87 /tmp/WAJetsamServiceExtensionFix-source.png --out "$RESOURCE_DIR/icon@3x.png" >/dev/null
-
-          python3 - <<'PY'
-          import struct
-          from pathlib import Path
-
-          expected = {
-              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon.png'): (29, 29),
-              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon@2x.png'): (58, 58),
-              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon@3x.png'): (87, 87),
-          }
-          for path, size in expected.items():
-              data = path.read_bytes()
-              assert data[:8] == b'\x89PNG\r\n\x1a\n', path
-              width, height = struct.unpack('>II', data[16:24])
-              assert (width, height) == size, (path, width, height, size)
-          PY
-
-      - name: Verify clean source
+      - name: Verify clean source and Settings resources
         shell: bash
         run: |
           set -euo pipefail
           grep -q '^Package: com.551.wajetsamserviceextensionfix$' control
           grep -q '^Name: WAJetsam-ServiceExtensionFix$' control
-          grep -q '^Version: 1.8.5$' control
+          grep -q '^Version: 2.0$' control
           grep -q '^Homepage: https://github.com/551UK/WAJetsam-ServiceExtensionFix$' control
           grep -q '#define WAJ_TARGET_LIMIT_MB 40' WAJetsamPolicy.h
           grep -q 'checkExpiryDate' WatusiExpiryFix.m
@@ -74,6 +38,7 @@ jobs:
           grep -q 'finish reboot' layout/DEBIAN/postinst
           grep -q 'GitHub Repository' WAJetsamServiceExtensionFixPrefs/WAJRootListController.m
           grep -q 'https://github.com/551UK/WAJetsam-ServiceExtensionFix' WAJetsamServiceExtensionFixPrefs/WAJRootListController.m
+
           ! grep -q 'WatusiExpiryFix.log' WatusiExpiryFix.m
           ! test -e Trace.m
           ! test -e observer.c
@@ -96,13 +61,29 @@ jobs:
           grep -q '<string>WAJetsamServiceExtensionFixPrefs</string>' "$ENTRY"
           grep -q '<string>WAJRootListController</string>' "$ENTRY"
           grep -q '<string>icon.png</string>' "$ENTRY"
-          ! grep -q '/var/jb/Library/PreferenceLoader/Preferences/.*\.png' "$ENTRY"
           ! grep -q '<key>controller</key>' "$ENTRY"
           ! grep -q '<key>iconImage</key>' "$ENTRY"
+          ! grep -q '/var/jb/' "$ENTRY"
 
           test -s WAJetsamServiceExtensionFixPrefs/Resources/icon.png
           test -s WAJetsamServiceExtensionFixPrefs/Resources/icon@2x.png
           test -s WAJetsamServiceExtensionFixPrefs/Resources/icon@3x.png
+
+          python3 - <<'PY'
+          import struct
+          from pathlib import Path
+
+          expected = {
+              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon.png'): (29, 29),
+              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon@2x.png'): (58, 58),
+              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon@3x.png'): (87, 87),
+          }
+          for path, size in expected.items():
+              data = path.read_bytes()
+              assert data[:8] == b'\x89PNG\r\n\x1a\n', path
+              width, height = struct.unpack('>II', data[16:24])
+              assert (width, height) == size, (path, width, height, size)
+          PY
 
       - name: Test 40 MB policy
         shell: bash
@@ -142,7 +123,7 @@ jobs:
           test -n "$DEB"
           test "$(dpkg-deb -f "$DEB" Architecture)" = 'iphoneos-arm64'
           test "$(dpkg-deb -f "$DEB" Package)" = 'com.551.wajetsamserviceextensionfix'
-          test "$(dpkg-deb -f "$DEB" Version)" = '1.8.5'
+          test "$(dpkg-deb -f "$DEB" Version)" = '2.0'
           test "$(dpkg-deb -f "$DEB" Name)" = 'WAJetsam-ServiceExtensionFix'
 
           VERIFY_DIR="$RUNNER_TEMP/wajetsam-package-check"
@@ -164,8 +145,6 @@ jobs:
           test -d "$PREF_BUNDLE"
           test -f "$PREF_ENTRY"
 
-          # Match the working Replaced-Screen-Battery PreferenceLoader layout:
-          # the entry asks for icon.png and the image variants live in the prefs bundle.
           grep -q '<string>icon.png</string>' "$PREF_ENTRY"
           test -f "$PREF_BUNDLE/icon.png"
           test -f "$PREF_BUNDLE/icon@2x.png"
