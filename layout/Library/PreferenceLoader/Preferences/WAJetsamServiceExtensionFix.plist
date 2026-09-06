@@ -7,7 +7,7 @@
         <key>cell</key>
         <string>PSLinkCell</string>
         <key>label</key>
-        <string>WAJetsam&amp;ServiceExtensionFIx</string>
+        <string>WAJetsam-ServiceExtensionFix</string>
         <key>bundle</key>
         <string>WatusiServiceFixPrefs</string>
         <key>detail</key>
