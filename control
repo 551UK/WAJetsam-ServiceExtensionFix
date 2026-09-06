@@ -1,0 +1,11 @@
+Package: com.551.wajetsamserviceextensionfix
+Name: WAJetsam&ServiceExtensionFIx
+Version: 1.8.0
+Architecture: iphoneos-arm64
+Description: Prevents WatusiTools from terminating WhatsApp ServiceExtension and keeps its positive Jetsam memory limit at a 40 MB minimum. iOS 16 rootless.
+Maintainer: 551
+Author: 551
+Section: Tweaks
+Depends: ellekit
+Conflicts: com.551.watusiservicediag
+Replaces: com.551.watusiservicediag

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>entry</key>
+    <dict>
+        <key>cell</key>
+        <string>PSLinkCell</string>
+        <key>label</key>
+        <string>WAJetsam&amp;ServiceExtensionFIx</string>
+        <key>bundle</key>
+        <string>WatusiServiceFixPrefs</string>
+        <key>detail</key>
+        <string>WSFRootListController</string>
+        <key>controller</key>
+        <string>WSFRootListController</string>
+        <key>isController</key>
+        <true/>
+        <key>icon</key>
+        <string>/var/jb/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png</string>
+        <key>iconImage</key>
+        <string>/var/jb/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png</string>
+    </dict>
+</dict>
+</plist>
