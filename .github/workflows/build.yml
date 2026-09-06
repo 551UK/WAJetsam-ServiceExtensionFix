@@ -31,7 +31,7 @@ jobs:
           data = base64.b64decode(Path('assets/WAJetsamServiceExtensionFix.png.b64').read_text().strip())
           targets = [
               Path('layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png'),
-              Path('WatusiServiceFixPrefs/Resources/icon.png'),
+              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon.png'),
           ]
           for target in targets:
               target.parent.mkdir(parents=True, exist_ok=True)
@@ -44,32 +44,45 @@ jobs:
           set -euo pipefail
           grep -q '^Package: com.551.wajetsamserviceextensionfix$' control
           grep -q '^Name: WAJetsam-ServiceExtensionFix$' control
-          grep -q '^Version: 1.8.1$' control
+          grep -q '^Version: 1.8.2$' control
           grep -q '^Homepage: https://github.com/551UK/WAJetsam-ServiceExtensionFix$' control
-          grep -q '#define WSD_TARGET_LIMIT_MB 40' policy.h
-          grep -q 'checkExpiryDate' ExpiryFix.m
-          grep -q 'libWatusiTools' ExpiryFix.m
-          grep -q 'WEF_ARM64_BLR_X19' ExpiryFix.m
-          grep -q 'MSHookMemory' ExpiryFix.m
-          grep -q 'com.551.wajetsamserviceextensionfix' ExpiryFix.m
+          grep -q '#define WAJ_TARGET_LIMIT_MB 40' WAJetsamPolicy.h
+          grep -q 'checkExpiryDate' WatusiExpiryFix.m
+          grep -q 'libWatusiTools' WatusiExpiryFix.m
+          grep -q 'WEF_ARM64_BLR_X19' WatusiExpiryFix.m
+          grep -q 'MSHookMemory' WatusiExpiryFix.m
+          grep -q 'com.551.wajetsamserviceextensionfix' WatusiExpiryFix.m
           grep -q 'finish reboot' layout/DEBIAN/postinst
-          grep -q 'GitHub Repository' WatusiServiceFixPrefs/WSFRootListController.m
-          grep -q 'https://github.com/551UK/WAJetsam-ServiceExtensionFix' WatusiServiceFixPrefs/WSFRootListController.m
-          ! grep -q 'WatusiExpiryFix.log' ExpiryFix.m
+          grep -q 'GitHub Repository' WAJetsamServiceExtensionFixPrefs/WAJRootListController.m
+          grep -q 'https://github.com/551UK/WAJetsam-ServiceExtensionFix' WAJetsamServiceExtensionFixPrefs/WAJRootListController.m
+          ! grep -q 'WatusiExpiryFix.log' WatusiExpiryFix.m
           ! test -e Trace.m
           ! test -e observer.c
           ! test -e report.m
           ! test -e status.c
+          ! test -e WatusiServiceFixPrefs
+          ! test -e WatusiServiceDiag.plist
+          ! test -e ExpiryFix.m
+          ! test -e Tweak.x
+          ! test -e libproc.h
+          ! test -e policy.h
+          ! test -e tests/test_policy.c
           plutil -lint WatusiExpiryFix.plist
-          plutil -lint WatusiServiceDiag.plist
-          plutil -lint WatusiServiceFixPrefs/Info.plist
+          plutil -lint WAJetsamServiceExtensionFix.plist
+          plutil -lint WAJetsamServiceExtensionFixPrefs/Info.plist
           plutil -lint layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          grep -q '<string>WAJetsamServiceExtensionFixPrefs</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          grep -q '<string>WAJRootListController</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          grep -q '<string>WAJetsamServiceExtensionFix.png</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          ! grep -q '<key>controller</key>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          ! grep -q '<key>iconImage</key>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          ! grep -q '/var/jb/' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
 
       - name: Test 40 MB policy
         shell: bash
         run: |
           set -euo pipefail
-          cc -Wall -Wextra -Werror tests/test_policy.c -o "$RUNNER_TEMP/wajetsam-policy-test"
+          cc -Wall -Wextra -Werror tests/test_jetsam_policy.c -o "$RUNNER_TEMP/wajetsam-policy-test"
           "$RUNNER_TEMP/wajetsam-policy-test"
 
       - name: Install Theos
@@ -103,7 +116,7 @@ jobs:
           test -n "$DEB"
           test "$(dpkg-deb -f "$DEB" Architecture)" = 'iphoneos-arm64'
           test "$(dpkg-deb -f "$DEB" Package)" = 'com.551.wajetsamserviceextensionfix'
-          test "$(dpkg-deb -f "$DEB" Version)" = '1.8.1'
+          test "$(dpkg-deb -f "$DEB" Version)" = '1.8.2'
           test "$(dpkg-deb -f "$DEB" Name)" = 'WAJetsam-ServiceExtensionFix'
 
           VERIFY_DIR="$RUNNER_TEMP/wajetsam-package-check"
@@ -113,23 +126,24 @@ jobs:
           dpkg-deb -e "$DEB" "$CONTROL_DIR"
 
           ROOT="$VERIFY_DIR/var/jb"
-          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceDiag.dylib"
-          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceDiag.plist"
+          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WAJetsamServiceExtensionFix.dylib"
+          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WAJetsamServiceExtensionFix.plist"
           test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiExpiryFix.dylib"
           test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiExpiryFix.plist"
-          test -d "$ROOT/Library/PreferenceBundles/WatusiServiceFixPrefs.bundle"
+          test -d "$ROOT/Library/PreferenceBundles/WAJetsamServiceExtensionFixPrefs.bundle"
           test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist"
           test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png"
           test -x "$CONTROL_DIR/postinst"
           grep -q 'finish reboot' "$CONTROL_DIR/postinst"
 
+          ! test -e "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceDiag.dylib"
           ! test -e "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceTrace.dylib"
           ! test -e "$ROOT/usr/bin/watusidiag-observer"
           ! test -e "$ROOT/usr/bin/watusidiag-report"
           ! test -e "$ROOT/usr/bin/watusidiag-status"
           ! test -e "$ROOT/usr/bin/watusidiag-collect"
 
-          lipo "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceDiag.dylib" -verify_arch arm64 arm64e
+          lipo "$ROOT/Library/MobileSubstrate/DynamicLibraries/WAJetsamServiceExtensionFix.dylib" -verify_arch arm64 arm64e
           lipo "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiExpiryFix.dylib" -verify_arch arm64 arm64e
           shasum -a 256 "$DEB"
 
