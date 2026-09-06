@@ -11,7 +11,7 @@
         <key>detail</key>
         <string>WAJRootListController</string>
         <key>icon</key>
-        <string>WAJetsamServiceExtensionFix.png</string>
+        <string>/var/jb/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png</string>
         <key>isController</key>
         <true/>
         <key>label</key>
