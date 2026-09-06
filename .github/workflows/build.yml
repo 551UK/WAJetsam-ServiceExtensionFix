@@ -21,7 +21,47 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify clean source and Settings resources
+      - name: Generate correctly sized Settings icons
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import base64
+          from pathlib import Path
+
+          data = base64.b64decode(Path('assets/WAJetsamServiceExtensionFix.png.b64').read_text().strip())
+          source = Path('/tmp/WAJetsamServiceExtensionFix-source.png')
+          bundle_icon = Path('WAJetsamServiceExtensionFixPrefs/Resources/icon.png')
+          source.write_bytes(data)
+          bundle_icon.parent.mkdir(parents=True, exist_ok=True)
+          bundle_icon.write_bytes(data)
+          PY
+
+          ICON_DIR="layout/Library/PreferenceLoader/Preferences"
+          mkdir -p "$ICON_DIR"
+          sips -z 29 29 /tmp/WAJetsamServiceExtensionFix-source.png --out "$ICON_DIR/WAJetsamServiceExtensionFix.png" >/dev/null
+          sips -z 58 58 /tmp/WAJetsamServiceExtensionFix-source.png --out "$ICON_DIR/WAJetsamServiceExtensionFix@2x.png" >/dev/null
+          sips -z 87 87 /tmp/WAJetsamServiceExtensionFix-source.png --out "$ICON_DIR/WAJetsamServiceExtensionFix@3x.png" >/dev/null
+
+          python3 - <<'PY'
+          import struct
+          from pathlib import Path
+
+          expected = {
+              Path('layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png'): (29, 29),
+              Path('layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@2x.png'): (58, 58),
+              Path('layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@3x.png'): (87, 87),
+          }
+
+          for path, size in expected.items():
+              data = path.read_bytes()
+              assert data[:8] == b'\x89PNG\r\n\x1a\n', path
+              width, height = struct.unpack('>II', data[16:24])
+              assert (width, height) == size, (path, width, height, size)
+          PY
+
+      - name: Verify clean source
         shell: bash
         run: |
           set -euo pipefail
@@ -38,7 +78,6 @@ jobs:
           grep -q 'finish reboot' layout/DEBIAN/postinst
           grep -q 'GitHub Repository' WAJetsamServiceExtensionFixPrefs/WAJRootListController.m
           grep -q 'https://github.com/551UK/WAJetsam-ServiceExtensionFix' WAJetsamServiceExtensionFixPrefs/WAJRootListController.m
-
           ! grep -q 'WatusiExpiryFix.log' WatusiExpiryFix.m
           ! test -e Trace.m
           ! test -e observer.c
@@ -51,43 +90,16 @@ jobs:
           ! test -e libproc.h
           ! test -e policy.h
           ! test -e tests/test_policy.c
-
           plutil -lint WatusiExpiryFix.plist
           plutil -lint WAJetsamServiceExtensionFix.plist
           plutil -lint WAJetsamServiceExtensionFixPrefs/Info.plist
           plutil -lint layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
-
-          ENTRY="layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist"
-          grep -q '<string>WAJetsamServiceExtensionFixPrefs</string>' "$ENTRY"
-          grep -q '<string>WAJRootListController</string>' "$ENTRY"
-          grep -q '<string>WAJetsamServiceExtensionFix.png</string>' "$ENTRY"
-          ! grep -q '<key>controller</key>' "$ENTRY"
-          ! grep -q '<key>iconImage</key>' "$ENTRY"
-          ! grep -q '/var/jb/' "$ENTRY"
-
-          grep -q 'Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png' Makefile
-          grep -q 'Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@2x.png' Makefile
-          grep -q 'Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@3x.png' Makefile
-
-          test -s WAJetsamServiceExtensionFixPrefs/Resources/icon.png
-          test -s WAJetsamServiceExtensionFixPrefs/Resources/icon@2x.png
-          test -s WAJetsamServiceExtensionFixPrefs/Resources/icon@3x.png
-
-          python3 - <<'PY'
-          import struct
-          from pathlib import Path
-
-          expected = {
-              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon.png'): (29, 29),
-              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon@2x.png'): (58, 58),
-              Path('WAJetsamServiceExtensionFixPrefs/Resources/icon@3x.png'): (87, 87),
-          }
-          for path, size in expected.items():
-              data = path.read_bytes()
-              assert data[:8] == b'\x89PNG\r\n\x1a\n', path
-              width, height = struct.unpack('>II', data[16:24])
-              assert (width, height) == size, (path, width, height, size)
-          PY
+          grep -q '<string>WAJetsamServiceExtensionFixPrefs</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          grep -q '<string>WAJRootListController</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          grep -q '<string>WAJetsamServiceExtensionFix.png</string>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          ! grep -q '<key>controller</key>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          ! grep -q '<key>iconImage</key>' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
+          ! grep -q '/var/jb/' layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
 
       - name: Test 40 MB policy
         shell: bash
@@ -138,53 +150,44 @@ jobs:
           dpkg-deb -e "$DEB" "$CONTROL_DIR"
 
           ROOT="$VERIFY_DIR/var/jb"
-          DYLIB_DIR="$ROOT/Library/MobileSubstrate/DynamicLibraries"
-          PREF_BUNDLE="$ROOT/Library/PreferenceBundles/WAJetsamServiceExtensionFixPrefs.bundle"
-          PREF_DIR="$ROOT/Library/PreferenceLoader/Preferences"
-          PREF_ENTRY="$PREF_DIR/WAJetsamServiceExtensionFix.plist"
+          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WAJetsamServiceExtensionFix.dylib"
+          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WAJetsamServiceExtensionFix.plist"
+          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiExpiryFix.dylib"
+          test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiExpiryFix.plist"
+          test -d "$ROOT/Library/PreferenceBundles/WAJetsamServiceExtensionFixPrefs.bundle"
+          test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist"
+          test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png"
+          test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@2x.png"
+          test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix@3x.png"
+          test -x "$CONTROL_DIR/postinst"
+          grep -q 'finish reboot' "$CONTROL_DIR/postinst"
 
-          test -f "$DYLIB_DIR/WAJetsamServiceExtensionFix.dylib"
-          test -f "$DYLIB_DIR/WAJetsamServiceExtensionFix.plist"
-          test -f "$DYLIB_DIR/WatusiExpiryFix.dylib"
-          test -f "$DYLIB_DIR/WatusiExpiryFix.plist"
-          test -d "$PREF_BUNDLE"
-          test -f "$PREF_ENTRY"
-
-          grep -q '<string>WAJetsamServiceExtensionFix.png</string>' "$PREF_ENTRY"
-          test -f "$PREF_DIR/WAJetsamServiceExtensionFix.png"
-          test -f "$PREF_DIR/WAJetsamServiceExtensionFix@2x.png"
-          test -f "$PREF_DIR/WAJetsamServiceExtensionFix@3x.png"
-
-          python3 - "$PREF_DIR" <<'PY'
+          python3 - "$ROOT/Library/PreferenceLoader/Preferences" <<'PY'
           import struct
           import sys
           from pathlib import Path
 
-          pref_dir = Path(sys.argv[1])
+          root = Path(sys.argv[1])
           expected = {
-              pref_dir / 'WAJetsamServiceExtensionFix.png': (29, 29),
-              pref_dir / 'WAJetsamServiceExtensionFix@2x.png': (58, 58),
-              pref_dir / 'WAJetsamServiceExtensionFix@3x.png': (87, 87),
+              root / 'WAJetsamServiceExtensionFix.png': (29, 29),
+              root / 'WAJetsamServiceExtensionFix@2x.png': (58, 58),
+              root / 'WAJetsamServiceExtensionFix@3x.png': (87, 87),
           }
           for path, size in expected.items():
               data = path.read_bytes()
-              assert data[:8] == b'\x89PNG\r\n\x1a\n', path
               width, height = struct.unpack('>II', data[16:24])
               assert (width, height) == size, (path, width, height, size)
           PY
 
-          test -x "$CONTROL_DIR/postinst"
-          grep -q 'finish reboot' "$CONTROL_DIR/postinst"
-
-          ! test -e "$DYLIB_DIR/WatusiServiceDiag.dylib"
-          ! test -e "$DYLIB_DIR/WatusiServiceTrace.dylib"
+          ! test -e "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceDiag.dylib"
+          ! test -e "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceTrace.dylib"
           ! test -e "$ROOT/usr/bin/watusidiag-observer"
           ! test -e "$ROOT/usr/bin/watusidiag-report"
           ! test -e "$ROOT/usr/bin/watusidiag-status"
           ! test -e "$ROOT/usr/bin/watusidiag-collect"
 
-          lipo "$DYLIB_DIR/WAJetsamServiceExtensionFix.dylib" -verify_arch arm64 arm64e
-          lipo "$DYLIB_DIR/WatusiExpiryFix.dylib" -verify_arch arm64 arm64e
+          lipo "$ROOT/Library/MobileSubstrate/DynamicLibraries/WAJetsamServiceExtensionFix.dylib" -verify_arch arm64 arm64e
+          lipo "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiExpiryFix.dylib" -verify_arch arm64 arm64e
           shasum -a 256 "$DEB"
 
       - name: Upload compiled DEB artifact
