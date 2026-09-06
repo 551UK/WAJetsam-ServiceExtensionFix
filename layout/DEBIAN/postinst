@@ -1,0 +1,20 @@
+#!/bin/sh
+
+finish() {
+    state="$1"
+    [ -z "$state" ] && return
+    [ -z "$CYDIA" ] && return
+
+    set -- $CYDIA
+    fd="$1"
+    ver="$2"
+
+    [ -n "$fd" ] || return
+    [ -n "$ver" ] || return
+    [ "$ver" -ge 1 ] 2>/dev/null || return
+
+    eval "echo 'finish:${state}' >&${fd}"
+}
+
+finish reboot
+exit 0
