@@ -1,4 +1,4 @@
-# WAJetsam&ServiceExtensionFIx
+# WAJetsam&ServiceExtensionFix
 
 Keeps WhatsApp’s ServiceExtension stable by raising its memory limit to 40 MB and preventing Watusi’s expiry-check code from terminating the extension.
 
