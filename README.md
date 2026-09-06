@@ -8,8 +8,6 @@ The tweak patches only that specific expiry-worker exit path and lets the worker
 
 If you use Choicy, make sure WatusiExpiryFix is allowed for net.whatsapp.WhatsApp.ServiceExtension and is not blocked, otherwise the main fix will not load.
 
-Repository: https://github.com/551UK/WAJetsam-ServiceExtensionFix
-
 -------------------------------------------------
 How this fix came about 
 ---------------------------------------------------
