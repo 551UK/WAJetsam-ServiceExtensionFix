@@ -1,4 +1,4 @@
-name: "Build WAJetsam&ServiceExtensionFIx"
+name: "Build WAJetsam-ServiceExtensionFix"
 
 on:
   workflow_dispatch:
@@ -43,14 +43,18 @@ jobs:
         run: |
           set -euo pipefail
           grep -q '^Package: com.551.wajetsamserviceextensionfix$' control
-          grep -q '^Name: WAJetsam&ServiceExtensionFIx$' control
-          grep -q '^Version: 1.8.0$' control
+          grep -q '^Name: WAJetsam-ServiceExtensionFix$' control
+          grep -q '^Version: 1.8.1$' control
+          grep -q '^Homepage: https://github.com/551UK/WAJetsam-ServiceExtensionFix$' control
           grep -q '#define WSD_TARGET_LIMIT_MB 40' policy.h
           grep -q 'checkExpiryDate' ExpiryFix.m
           grep -q 'libWatusiTools' ExpiryFix.m
           grep -q 'WEF_ARM64_BLR_X19' ExpiryFix.m
           grep -q 'MSHookMemory' ExpiryFix.m
           grep -q 'com.551.wajetsamserviceextensionfix' ExpiryFix.m
+          grep -q 'finish reboot' layout/DEBIAN/postinst
+          grep -q 'GitHub Repository' WatusiServiceFixPrefs/WSFRootListController.m
+          grep -q 'https://github.com/551UK/WAJetsam-ServiceExtensionFix' WatusiServiceFixPrefs/WSFRootListController.m
           ! grep -q 'WatusiExpiryFix.log' ExpiryFix.m
           ! test -e Trace.m
           ! test -e observer.c
@@ -99,11 +103,14 @@ jobs:
           test -n "$DEB"
           test "$(dpkg-deb -f "$DEB" Architecture)" = 'iphoneos-arm64'
           test "$(dpkg-deb -f "$DEB" Package)" = 'com.551.wajetsamserviceextensionfix'
-          test "$(dpkg-deb -f "$DEB" Version)" = '1.8.0'
+          test "$(dpkg-deb -f "$DEB" Version)" = '1.8.1'
+          test "$(dpkg-deb -f "$DEB" Name)" = 'WAJetsam-ServiceExtensionFix'
 
           VERIFY_DIR="$RUNNER_TEMP/wajetsam-package-check"
-          mkdir -p "$VERIFY_DIR"
+          CONTROL_DIR="$RUNNER_TEMP/wajetsam-control-check"
+          mkdir -p "$VERIFY_DIR" "$CONTROL_DIR"
           dpkg-deb -x "$DEB" "$VERIFY_DIR"
+          dpkg-deb -e "$DEB" "$CONTROL_DIR"
 
           ROOT="$VERIFY_DIR/var/jb"
           test -f "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceDiag.dylib"
@@ -113,6 +120,8 @@ jobs:
           test -d "$ROOT/Library/PreferenceBundles/WatusiServiceFixPrefs.bundle"
           test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist"
           test -f "$ROOT/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png"
+          test -x "$CONTROL_DIR/postinst"
+          grep -q 'finish reboot' "$CONTROL_DIR/postinst"
 
           ! test -e "$ROOT/Library/MobileSubstrate/DynamicLibraries/WatusiServiceTrace.dylib"
           ! test -e "$ROOT/usr/bin/watusidiag-observer"
@@ -127,7 +136,7 @@ jobs:
       - name: Upload compiled DEB artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WAJetsam-ServiceExtensionFIx-rootless-DEB
+          name: WAJetsam-ServiceExtensionFix-rootless-DEB
           path: packages/*.deb
           if-no-files-found: error
 
@@ -147,6 +156,6 @@ jobs:
           else
             gh release create "$TAG" "$DEB" \
               --target "${GITHUB_SHA}" \
-              --title "WAJetsam&ServiceExtensionFIx ${VERSION}" \
+              --title "WAJetsam-ServiceExtensionFix ${VERSION}" \
               --notes-file RELEASE_NOTES.md
           fi
