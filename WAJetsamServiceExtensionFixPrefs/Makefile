@@ -9,7 +9,7 @@ WAJetsamServiceExtensionFixPrefs_FRAMEWORKS = Foundation CoreFoundation UIKit
 WAJetsamServiceExtensionFixPrefs_PRIVATE_FRAMEWORKS = Preferences
 WAJetsamServiceExtensionFixPrefs_INSTALL_PATH = /Library/PreferenceBundles
 WAJetsamServiceExtensionFixPrefs_INFOPLIST_FILE = Info.plist
-WAJetsamServiceExtensionFixPrefs_RESOURCE_FILES = Resources/icon.png
+WAJetsamServiceExtensionFixPrefs_RESOURCE_FILES = Resources/icon.png Resources/icon@2x.png Resources/icon@3x.png
 WAJetsamServiceExtensionFixPrefs_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/bundle.mk
