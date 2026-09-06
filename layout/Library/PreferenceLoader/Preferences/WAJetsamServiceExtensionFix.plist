@@ -4,22 +4,18 @@
 <dict>
     <key>entry</key>
     <dict>
+        <key>bundle</key>
+        <string>WAJetsamServiceExtensionFixPrefs</string>
         <key>cell</key>
         <string>PSLinkCell</string>
-        <key>label</key>
-        <string>WAJetsam-ServiceExtensionFix</string>
-        <key>bundle</key>
-        <string>WatusiServiceFixPrefs</string>
         <key>detail</key>
-        <string>WSFRootListController</string>
-        <key>controller</key>
-        <string>WSFRootListController</string>
+        <string>WAJRootListController</string>
+        <key>icon</key>
+        <string>WAJetsamServiceExtensionFix.png</string>
         <key>isController</key>
         <true/>
-        <key>icon</key>
-        <string>/var/jb/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png</string>
-        <key>iconImage</key>
-        <string>/var/jb/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.png</string>
+        <key>label</key>
+        <string>WAJetsam-ServiceExtensionFix</string>
     </dict>
 </dict>
 </plist>
