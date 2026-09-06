@@ -4,6 +4,7 @@
 #import <UIKit/UIKit.h>
 
 static NSString * const WSFPrefsDomain = @"com.551.wajetsamserviceextensionfix";
+static NSString * const WSFRepoURL = @"https://github.com/551UK/WAJetsam-ServiceExtensionFix";
 
 @implementation WSFRootListController
 
@@ -21,7 +22,7 @@ static NSString * const WSFPrefsDomain = @"com.551.wajetsamserviceextensionfix";
         iconView.translatesAutoresizingMaskIntoConstraints = NO;
 
         UILabel *titleLabel = [UILabel new];
-        titleLabel.text = @"WAJetsam&ServiceExtensionFIx";
+        titleLabel.text = @"WAJetsam-ServiceExtensionFix";
         titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
         titleLabel.textColor = UIColor.labelColor;
 
@@ -37,7 +38,7 @@ static NSString * const WSFPrefsDomain = @"com.551.wajetsamserviceextensionfix";
 
         self.navigationItem.titleView = titleView;
     } else {
-        self.title = @"WAJetsam&ServiceExtensionFIx";
+        self.title = @"WAJetsam-ServiceExtensionFix";
     }
 }
 
@@ -46,8 +47,8 @@ static NSString * const WSFPrefsDomain = @"com.551.wajetsamserviceextensionfix";
 
     NSMutableArray *specifiers = [NSMutableArray array];
 
-    PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"WAJetsam&ServiceExtensionFIx"];
-    [group setProperty:@"Prevents WatusiTools' checkExpiryDate worker from closing WhatsApp's ServiceExtension, which can leave messages stuck on one tick. A 40 MB ServiceExtension memory floor is also kept active."
+    PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"WAJetsam-ServiceExtensionFix"];
+    [group setProperty:@"Keeps WhatsApp's ServiceExtension stable with a 40 MB memory floor and patches WatusiTools' checkExpiryDate exit path so it returns normally instead of calling _exit(0) and closing the extension."
                 forKey:@"footerText"];
     [specifiers addObject:group];
 
@@ -64,9 +65,20 @@ static NSString * const WSFPrefsDomain = @"com.551.wajetsamserviceextensionfix";
     [specifiers addObject:enabled];
 
     PSSpecifier *note = [PSSpecifier groupSpecifierWithName:nil];
-    [note setProperty:@"The switch controls the Watusi exit patch. Changes apply the next time WhatsApp's ServiceExtension starts. The 40 MB memory floor remains enabled."
+    [note setProperty:@"If you use Choicy, make sure WatusiExpiryFix is allowed for net.whatsapp.WhatsApp.ServiceExtension and is not blocked. The switch controls the Watusi exit patch; the 40 MB memory floor remains enabled."
                forKey:@"footerText"];
     [specifiers addObject:note];
+
+    PSSpecifier *repo = [PSSpecifier preferenceSpecifierNamed:@"GitHub Repository"
+                                                        target:self
+                                                           set:nil
+                                                           get:nil
+                                                        detail:nil
+                                                          cell:PSButtonCell
+                                                          edit:nil];
+    [repo setButtonAction:@selector(openRepo)];
+    [repo setProperty:NSStringFromSelector(@selector(openRepo)) forKey:@"action"];
+    [specifiers addObject:repo];
 
     _specifiers = [specifiers copy];
     return _specifiers;
@@ -96,6 +108,28 @@ static NSString * const WSFPrefsDomain = @"com.551.wajetsamserviceextensionfix";
                              (__bridge CFPropertyListRef)value,
                              (__bridge CFStringRef)domain);
     CFPreferencesAppSynchronize((__bridge CFStringRef)domain);
+}
+
+- (void)openRepo {
+    NSURL *url = [NSURL URLWithString:WSFRepoURL];
+    if (!url) return;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIApplication *application = UIApplication.sharedApplication;
+        if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+            [application openURL:url options:@{} completionHandler:nil];
+        } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            [application openURL:url];
+#pragma clang diagnostic pop
+        }
+    });
+}
+
+- (void)openRepo:(id)sender {
+    (void)sender;
+    [self openRepo];
 }
 
 @end
