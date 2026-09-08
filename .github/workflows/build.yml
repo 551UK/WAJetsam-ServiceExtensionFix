@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           grep -q '^Package: com.551.wajetsamserviceextensionfix$' control
           grep -q '^Name: WAJetsam-ServiceExtensionFix$' control
-          grep -q '^Version: 2.0.1$' control
+          grep -q '^Version: 2.0.2$' control
           grep -q '^Homepage: https://github.com/551UK/WAJetsam-ServiceExtensionFix$' control
           grep -q '#define WAJ_TARGET_LIMIT_MB 40' WAJetsamPolicy.h
           grep -q 'checkExpiryDate' WatusiExpiryFix.m
@@ -57,6 +57,7 @@ jobs:
           ! test -e policy.h
           ! test -e tests/test_policy.c
           plutil -lint WatusiExpiryFix.plist
+          python3 -c 'import json, subprocess; p = json.loads(subprocess.check_output(["plutil", "-convert", "json", "-o", "-", "WatusiExpiryFix.plist"])); assert set(p["Filter"]["Bundles"]) == {"net.whatsapp.WhatsApp.ServiceExtension", "net.whatsapp.WhatsAppSMB.ServiceExtension"}'
           plutil -lint WAJetsamServiceExtensionFix.plist
           plutil -lint WAJetsamServiceExtensionFixPrefs/Info.plist
           plutil -lint layout/Library/PreferenceLoader/Preferences/WAJetsamServiceExtensionFix.plist
@@ -105,7 +106,7 @@ jobs:
           test -n "$DEB"
           test "$(dpkg-deb -f "$DEB" Architecture)" = 'iphoneos-arm64'
           test "$(dpkg-deb -f "$DEB" Package)" = 'com.551.wajetsamserviceextensionfix'
-          test "$(dpkg-deb -f "$DEB" Version)" = '2.0.1'
+          test "$(dpkg-deb -f "$DEB" Version)" = '2.0.2'
           test "$(dpkg-deb -f "$DEB" Name)" = 'WAJetsam-ServiceExtensionFix'
 
           VERIFY_DIR="$RUNNER_TEMP/wajetsam-package-check"

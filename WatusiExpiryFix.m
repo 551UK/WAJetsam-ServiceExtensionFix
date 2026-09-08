@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "WAJetsamPolicy.h"
+
 #define WEF_SCAN_BEFORE          ((uintptr_t)0x00004000)
 #define WEF_SCAN_AFTER           ((uintptr_t)0x00030000)
 #define WEF_MAX_CALLS            32
@@ -80,7 +82,7 @@ static bool wef_is_service_extension(void) {
     char path[4096] = {0};
     uint32_t size = sizeof(path);
     if (_NSGetExecutablePath(path, &size) != 0) return false;
-    return strstr(path, "/WhatsApp.app/PlugIns/ServiceExtension.appex/ServiceExtension") != NULL;
+    return waj_is_whatsapp_service_path(path);
 }
 
 static bool wef_text_bounds(const void *base, uintptr_t *out_start, uintptr_t *out_end) {

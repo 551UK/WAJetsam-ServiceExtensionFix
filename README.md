@@ -1,12 +1,14 @@
 # WAJetsam-ServiceExtensionFix
 
-Keeps WhatsApp’s ServiceExtension stable by raising its memory limit to 40 MB and preventing Watusi’s expiry-check code from terminating the extension.
+Supports WhatsApp and WhatsApp Business with Watusi on a rootless jailbreak. Keeps their ServiceExtension stable by raising its memory limit to 40 MB and preventing Watusi’s expiry-check code from terminating the extension.
 
 Watusi’s checkExpiryDate path can intentionally call _exit(0) inside WhatsApp’s ServiceExtension. When that happens, the extension closes cleanly and WhatsApp background message processing can stop, which can leave messages stuck on one tick until the ServiceExtension starts again.
 
 The tweak patches only that specific expiry-worker exit path and lets the worker return normally instead of killing the ServiceExtension.
 
-If you use Choicy, make sure WatusiExpiryFix is allowed for net.whatsapp.WhatsApp.ServiceExtension and is not blocked, otherwise the main fix will not load.
+If you use Choicy, make sure WatusiExpiryFix is allowed for net.whatsapp.WhatsApp.ServiceExtension (WhatsApp) or net.whatsapp.WhatsAppSMB.ServiceExtension (WhatsApp Business) and is not blocked, otherwise the main fix will not load.
+
+Business targeting is included from version 2.0.2. Device verification with your installed Watusi Business version is still required; the patch only applies when its existing WatusiTools signature matches.
 
 -------------------------------------------------
 How this fix came about 

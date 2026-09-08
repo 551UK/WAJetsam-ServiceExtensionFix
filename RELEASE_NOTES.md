@@ -1,10 +1,7 @@
-WAJetsam-ServiceExtensionFix 2.0.1
+WAJetsam-ServiceExtensionFix 2.0.2
 
-Fixes the missing Settings icon in 2.0:
-- Packages the exact icon filename requested by PreferenceLoader inside the preference bundle.
-- Includes the previously missing bundle Info.plist using Theos RESOURCE_FILES.
-- Uses the checked-in 29x29, 58x58 (@2x), and 87x87 (@3x) icons without overwriting them during the build.
-- Checks the extracted DEB for bundle metadata, executable, icon reference, PNG integrity, dimensions, and matching source artwork before publishing.
+Adds WhatsApp Business ServiceExtension targeting to the Watusi fix. Both components now use the same exact service-extension path checks.
 
-The WhatsApp/Watusi patch code and preference controls are unchanged.
-After installing, complete the package manager's restart action and reopen Settings.
+If using Choicy, allow WatusiExpiryFix for net.whatsapp.WhatsAppSMB.ServiceExtension. Complete the package manager restart action after installation.
+
+The 40 MB policy, existing WatusiTools signature checks, Settings controls and icons are retained. Business operation still requires verification on-device with the installed Watusi version.
