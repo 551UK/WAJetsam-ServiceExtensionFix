@@ -8,8 +8,6 @@ The tweak patches only that specific expiry-worker exit path and lets the worker
 
 If you use Choicy, make sure WatusiExpiryFix is allowed for net.whatsapp.WhatsApp.ServiceExtension (WhatsApp) or net.whatsapp.WhatsAppSMB.ServiceExtension (WhatsApp Business) and is not blocked, otherwise the main fix will not load.
 
-Business targeting is included from version 2.0.2. Device verification with your installed Watusi Business version is still required; the patch only applies when its existing WatusiTools signature matches.
-
 -------------------------------------------------
 How this fix came about 
 ---------------------------------------------------
