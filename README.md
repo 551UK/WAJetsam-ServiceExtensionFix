@@ -1,4 +1,4 @@
-# WAJetsam-ServiceExtensionFix
+# WAJetsam-ServiceExtensionFix (This is NOT just a jetsam limit increase tweak)
 
 Supports WhatsApp and WhatsApp Business with Watusi on a rootless jailbreak. Keeps their ServiceExtension stable by raising its memory limit to 40 MB and preventing Watusi’s expiry-check code from terminating the extension.
 
